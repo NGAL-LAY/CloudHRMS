@@ -1,0 +1,78 @@
+﻿@{
+    TempData["Title"] = "RegisterEntry";
+}
+<h3>Register Entry</h3>
+@{
+    var info = TempData["Info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<!--Register-->
+<form id="register" action="/login/entry" method="post" onsubmit="return validatePasswords()">
+    <div class="mb-3">
+        <label class="form-label">Code:</label>
+        <input type="text" class="form-control" name="Code" minlength="2" maxlength="10" placeholder="Type login code...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">UserName:</label>
+        <input type="text" class="form-control" name="UserName" minlength="4" maxlength="30" placeholder="Type username...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password:</label>
+        <input type="password" class="form-control" name="Password" minlength="8" maxlength="15" placeholder="Type password(8~15)...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">RePassword:</label>
+        <input type="password" class="form-control" name="RePassword" minlength="8" maxlength="15" placeholder="Type same password...." required />
+    </div>
+    <div class="mb-3" id="error-message" style="color: red;"></div>
+    <div>
+        <button type="submit" class="btn btn-primary" id="entry">Register</button>
+        <a href="/login/login" class="btn btn-outline-primary"><i>already Login?</i></a>
+    </div>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+            //check password and confirm password
+            // Function to check password and confirm password
+            window.checkFormValidity = function () {
+                const password = document.getElementsByName("Password")[0].value;
+                const confirmPassword = document.getElementsByName("RePassword")[0].value;
+                const form = document.getElementById('register');
+
+                if (password !== confirmPassword) {
+                    document.getElementById("error-message").innerText = "Passwords do not match!";
+                    return false; // Prevent form submission
+                } else {
+                    document.getElementById("error-message").innerText = "";
+                }
+
+                // Check overall form validity
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                    return true; // Allow form submission
+                } else {
+                    $('#entry').prop('disabled', true);
+                    return false; // Prevent form submission
+                }
+            }
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#register input, #register select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

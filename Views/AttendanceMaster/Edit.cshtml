@@ -1,0 +1,153 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model AttendanceMasterViewModel
+@{
+    TempData["Title"] = "AttendanceMaster Edit";
+}
+<h3>AttendanceMaster Edit</h3>
+@{
+    var info = TempData["info"];
+}
+<form id="attendancemaster" action="/attendancemaster/update" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                @if (employee.Id == Model.EmployeeId)
+                {
+                    <option value="@employee.Id" selected>@employee.Code</option>
+                }
+                else
+                {
+                    <option value="@employee.Id">@employee.Code</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ShiftName:</label>
+        <select class="form-select" name="ShiftId" required>
+            @foreach (var shift in ViewBag.ShiftData)
+            {
+                @if (shift.Id == Model.ShiftId)
+                {
+                    <option selected value="@shift.Id">@shift.Name</option>
+                }
+                else
+                {
+                    <option value="@shift.Id">@shift.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">AttendanceDate:</label>
+        <input type="date" class="form-control" name="AttendanceDate" required value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IsLeave:</label>
+        <input type="checkbox" id="IsLeave" name="IsLeave" value="true" @(Model.IsLeave ? "checked" : "") />
+        <input type="hidden" name="IsLeave" value="false" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">InTime</label>
+        <input type="time" class="form-control" id="InTime" name="InTime" value="@Model.InTime" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">OutTime</label>
+        <input type="time" class="form-control" id="OutTime" name="OutTime" value="@Model.OutTime" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IsLate:</label>
+        <input type="checkbox" id="IsLate" name="IsLate" value="true" @(Model.IsLate ? "checked" : "") />
+        <input type="hidden" name="IsLate" value="false" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IsEarlyOut:</label>
+        <input type="checkbox" id="IsEarlyOut" name="IsEarlyOut" value="true" @(Model.IsEarlyOut ? "checked" : "") />
+        <input type="hidden" name="IsEarlyOut" value="false" />
+    </div>
+
+    <div>
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/attendancemaster/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //start field enable or not on state of checkbox
+            $('#InTime').prop('disabled', $('#IsLeave').is(':checked'));
+            $('#OutTime').prop('disabled', $('#IsLeave').is(':checked'));
+            $('#IsLate').prop('disabled', $('#IsLeave').is(':checked'));
+            $('#IsEarlyOut').prop('disabled', $('#IsLeave').is(':checked'));
+            $('#IsLeave').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#InTime').prop('disabled', true);
+                    $('#OutTime').prop('disabled', true);
+                    $('#IsLate').prop('disabled', true);
+                    $('#IsEarlyOut').prop('disabled', true);
+                } else {
+                    $('#InTime').prop('disabled', false);
+                    $('#OutTime').prop('disabled', false);
+                    $('#IsLate').prop('disabled', false);
+                    $('#IsEarlyOut').prop('disabled', false);
+                }
+            });
+
+            //required or not on state of checkbox
+            function toggleRequired() {
+                const chkIsLeave = document.getElementById('IsLeave');
+                const txtInTime = document.getElementById('InTime');
+                const txtOutTime = document.getElementById('OutTime');
+                if (!chkIsLeave.checked) {
+                    //set required in field
+                    txtInTime.setAttribute('required', 'required');
+                    txtOutTime.setAttribute('required', 'required');
+                    $('#update').prop('disabled', true);
+                } else {
+                    //remove required in field
+                    txtInTime.removeAttribute('required');
+                    txtOutTime.removeAttribute('required');
+                    txtInTime.value = "";
+                    txtOutTime.value = "";
+                    $('#update').prop('disabled', false);
+                }
+            }
+            toggleRequired();
+
+            document.getElementById('IsLeave').addEventListener('change', toggleRequired);
+            //end field enable or not on state of checkbox
+
+            //start of form validity
+            function checkFormValidity() {
+                const form = document.getElementById('attendancemaster');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+            checkFormValidity();
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#attendancemaster input, #attendancemaster select').on('input change', function () {
+                checkFormValidity();
+            });
+            //end of form validity
+        });
+    </script>
+</form>

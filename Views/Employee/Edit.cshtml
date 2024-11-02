@@ -1,0 +1,149 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model EmployeeViewModel
+@{
+    TempData["Title"] = "EmployeeEdit";
+}
+<h3>Employee Entry</h3>
+@{
+    var info = TempData["Info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="employee" action="/employee/update" method="post">
+
+    <div class="mb-3">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <label class="form-label">Code:</label>
+        <input type="text" class="form-control" name="Code" minlength="2" maxlength="10" placeholder="Type employee code..." required value="@Model.Code" />
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleInputEmail" class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" placeholder="Type employee name..." required value="@Model.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email:</label>
+        <input type="email" class="form-control" name="Email" placeholder="Type email..." required value="@Model.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Position:</label>
+        <select class="form-select" name="PositionId" value="" required>
+            @foreach (var position in ViewBag.Positions)
+            {
+                @if (position.Id == Model.PositionId)
+                {
+                    <option value="@position.Id" selected>@position.Code</option>
+                }
+                else
+                {
+                    <option value="@position.Id">@position.Code</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Department:</label>
+        <select class="form-select" name="DepartmentId" value="" required>
+            @foreach (var department in ViewBag.Departments)
+            {
+                @if (department.Id == Model.DepartmentId)
+                {
+                    <option value="@department.Id" selected>@department.Code</option>
+                }
+                else
+                {
+                    <option value="@department.Id">@department.Code</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DateOfBirth:</label>
+        <input type="date" class="form-control" name="DOB" placeholder="Choose DOB" required value="@Model.DOB.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DateOfEnter:</label>
+        <input type="date" class="form-control" id="DOE" name="DOE" placeholder="Choose DOE" required value="@Model.DOE.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DateOfRetired:</label>
+        <input type="date" class="form-control" id="DOR" name="DOR" placeholder="Choose DOR" required value="@Model.DOR?.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone:</label>
+        <input type="text" class="form-control" name="Phone" minlength="8" maxlength="13" placeholder="Type phone(eg.xx-xxxx-xxxx)...." required value="@Model.Phone" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Address:</label>
+        <input type="text" class="form-control" name="Address" minlength="4" maxlength="100" placeholder="Type address...." required value="@Model.Address" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Basic Salary:</label>
+        <input type="number" class="form-control" name="BasicSalary" placeholder="Type salary..." required value="@Model.BasicSalary" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Gender:</label><br />
+        <input type="radio" class="form-check-input" name="Gender" required value="m" @(Model.Gender == "m" ? "Checked" : "") />Male
+        <input type="radio" class="form-check-input" name="Gender" required value="f" @(Model.Gender == "f" ? "Checked" : "") />Female
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/employee/list" class="btn btn-outline-primary">Goto List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //set up min date fo DOR date based on DOE date
+            document.getElementById('DOE').addEventListener('change', function () {
+                const dateDOE = this.value;
+                const dateDORInput = document.getElementById('DOR');
+                if (dateDOE) {
+                    const minDateDOR = new Date(dateDOE);
+                    minDateDOR.setDate(minDateDOR.getDate() + 1);
+                    //setting up DOR date format
+                    const formattedMinDate = minDateDOR.toISOString().split('T')[0];
+                    dateDORInput.min = formattedMinDate;
+                } else {
+                    dateDORInput.removeAttribute('min');
+                }
+            });
+
+            //check form validity
+            function checkFormValidity() {
+                const form = document.getElementById('employee');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#employee input, #employee select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

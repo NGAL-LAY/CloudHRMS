@@ -1,0 +1,89 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model AttendancePolicyViewModel
+@{
+    TempData["Title"] = "AttendancePolicy Edit";
+}
+<h3>AttendancePolicy Edit</h3>
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["info"]
+    </div>
+}
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="attendancepolicy" action="/attendancepolicy/update" method="post">
+
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" placeholder="Type attendance policy...." required value="@Model.Name">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">NumberOfLateTime:</label>
+        <input type="number" class="form-control" name="NumberOfLateTime" max="23" placeholder="Type late times(zero if no)...." required value="@Model.NumberOfLateTime">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">NumberOfEarlyOutTime:</label>
+        <input type="number" class="form-control" name="NumberOfEarlyOutTime" max="23" placeholder="Type early out times(zero if no)...." required value="@Model.NumberOfEarlyOutTime">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DeductionInDay:</label>
+        <input type="number" class="form-control" name="DeductionInDay" max="23" placeholder="Type deduction days(zero if no)...." required value="@Model.DeductionInDay">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DeductionInAmount:</label>
+        <input type="number" class="form-control" name="DeductionInAmount" placeholder="Type deduction amount(zero if no)...." required value="@Model.DeductionInAmount">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/attendancepolicy/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function checkFormValidity() {
+                const form = document.getElementById('attendancepolicy');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#attendancepolicy input, #attendancepolicy select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

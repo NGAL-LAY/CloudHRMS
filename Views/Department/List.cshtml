@@ -1,0 +1,183 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model IEnumerable<DepartmentViewModel>
+
+@{
+    TempData["Title"] = "DepartmentList";
+}
+
+<!-- Search form start-->
+<div class="d-flex align-items-center mb-3">
+    <h3>Department</h3>
+    <a class="btn btn-outline-primary ms-5" onclick="exportToExcel(event)">Export</a>
+    <form method="get" action="/department/list" class="d-flex w-50 " style="margin-left:49%">
+        <input type="text" name="searchTerm" class="form-control me-2" style="width: 200px"
+               value="@TempData["SearchTerm"]"
+               placeholder="Search by Code or Name" />
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+</div>
+<!-- Search form end-->
+<!--edit start-->
+@if (TempData["Info"] != null)
+{
+    @if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["info"]
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["info"]
+        </div>
+    }
+
+}
+<!--edit end-->
+
+<form action="/department/delete" method="post" onsubmit="return confirm('Are you sure to delete the selected record(s)?')">
+    <div class="tbl-wrapper">
+        <table class="table-bordered">
+            <colgroup>
+                <col style="width: 100px;">
+                <col style="width: 100px;">
+                <col style="width: 200px;">
+                <col style="width: 400px;">
+                <col style="width: 200px;">
+                <col style="width: 150px;">
+            </colgroup>
+            <thead>
+                @{
+                    int i = 1;
+                }
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" id="IsAllCheck" onclick="toggleAllCheckboxes(this)" />
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">ExtensionPhone</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        var isAssociated = ((List<string>)ViewBag.AssociatedDepartmentIds).Contains(item.Id);
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedIds" value="@item.Id"
+                                @(isAssociated ? "disabled" : "") />
+                            </td>
+                            <td scope="row">@i</td>
+                            <td>@item.Code</td>
+                            <td>@item.Name</td>
+                            <td>@item.ExtensionPhone</td>
+                            <td>
+                                <!-- call edit -->
+                                <a href="/department/edit?id=@item.Id" class="btn btn-success btn-edit">EDIT</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6">
+                            <div class="alert alert-danger">There is no data !</div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="div-btn">
+        <!-- Button to go Entry -->
+        <a href="/department/entry" class="btn btn-outline-primary">ENTRY</a>
+        <!-- Button to delete selected items -->
+        <button type="submit" class="btn btn-danger div-delete" onclick="validateCheckboxSelection(event)">DELETE</button>
+    </div>
+</form>
+<script>
+    //allchecked and unchecked
+    function toggleAllCheckboxes(source) {
+        checkboxes = document.getElementsByName('selectedIds');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+
+    //get value from checkboxes
+    function validateCheckboxSelection(event) {
+        const checkboxes = document.getElementsByName('selectedIds');
+        let IsChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        if (!IsChecked) {
+            alert("Please select at least one row to delete");
+            event.preventDefault();
+        }
+    }
+
+    //export data to excel
+    function exportToExcel(event) {
+        event.preventDefault();
+
+        // Gather data from the table
+        var data = [];
+        var table = document.querySelector('.table-bordered tbody');
+
+        table.querySelectorAll('tr').forEach(function (row) {
+            // Ensure cells are correctly indexed based on your table structure
+            var rowData = {
+                Code: row.cells[2] ? row.cells[2].innerText.trim() : "",
+                Name: row.cells[3] ? row.cells[3].innerText.trim() : "",
+                ExtensionPhone: row.cells[4] ? row.cells[4].innerText.trim() : ""
+            };
+            data.push(rowData);
+        });
+
+        $.ajax({
+            url: '/Department/ExportToExcel',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            xhrFields: {
+                responseType: 'blob' // Set response type to blob
+            },
+            success: function (response) {
+                // Create a link element to download the file
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+
+                // Dynamic filename with timestamp
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+                var day = now.getDate().toString().padStart(2, '0');
+                var hours = now.getHours().toString().padStart(2, '0');
+                var minutes = now.getMinutes().toString().padStart(2, '0');
+                var seconds = now.getSeconds().toString().padStart(2, '0');
+
+                var timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
+                a.download = `DepartmentData_${timestamp}.xlsx`;
+
+                document.body.appendChild(a); // Append the link to the body
+                a.click(); // Trigger the download
+
+                document.body.removeChild(a); // Clean up the DOM
+                window.URL.revokeObjectURL(url); // Release memory
+            },
+            error: function (xhr, status, error) {
+                console.error('Export failed:', error);
+                alert('An error occurred while exporting. Please try again.');
+            }
+        });
+    }
+</script>

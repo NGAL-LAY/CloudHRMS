@@ -1,0 +1,116 @@
+﻿@{
+    TempData["Title"] = "PayrollEntry";
+}
+<h3>Payroll Entry</h3>
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="payroll" action="/payroll/entry" method="post">
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            <option selected value="">Select Employee</option>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                <option value="@employee.Id">@employee.Code</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">FromDate:</label>
+        <input type="date" class="form-control" id="FromDate" name="FromDate" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">ToDate:</label>
+        <input type="date" class="form-control" id="ToDate" name="ToDate" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">IncomeTax:</label>
+        <input type="number" class="form-control" name="IncomeTax" placeholder="Type income tax(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">GrossPay:</label>
+        <input type="number" class="form-control" name="GrossPay" placeholder="Type gross pay(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">NetPay:</label>
+        <input type="number" class="form-control" name="NetPay" placeholder="Type net pay(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Allowlance:</label>
+        <input type="number" class="form-control" name="Allowlance" placeholder="Type allowlance(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deduction:</label>
+        <input type="number" class="form-control" name="Deduction" placeholder="Type deduction(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">AttendanceDays:</label>
+        <input type="number" class="form-control" name="AttendanceDays" placeholder="Type attendance days(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">AttendanceDeduction:</label>
+        <input type="number" class="form-control" name="AttendanceDeduction" placeholder="Type attendance deduction(zero if no)...." required />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/payroll/list" class="btn btn-outline-primary">Goto List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+            //set min date of todate based on fromdate
+            document.getElementById('FromDate').addEventListener('change', function () {
+                const fromDate = this.value;
+                const toInputDate = document.getElementById('ToDate');
+                if (fromDate) {
+                    const minToDate = new Date(fromDate);
+                    minToDate.setDate(minToDate.getDate() + 1);
+                    //setting up to match date format
+                    const formattedMinDate = minToDate.toISOString().split('T')[0];
+                    toInputDate.min = formattedMinDate;
+                } else {
+                    toDateInput.removeAttribute('min');
+                }
+            });
+
+            // check form validity
+            function checkFormValidity() {
+                const form = document.getElementById('payroll');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#payroll input, #payroll select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

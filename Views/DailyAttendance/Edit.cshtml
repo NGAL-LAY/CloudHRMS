@@ -1,0 +1,73 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model DailyAttendanceViewModel
+@{
+    TempData["Title"] = "DailyAttendance Edit";
+}
+<h3>DailyAttendance Edit</h3>
+@{
+    var info = TempData["info"];
+}
+<form id="dailyattendance" action="/dailyattendance/update" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                @if (employee.Id == Model.EmployeeId)
+                {
+                    <option value="@employee.Id" selected>@employee.Code</option>
+                }
+                else
+                {
+                    <option value="@employee.Id">@employee.Code</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">AttendanceDate:</label>
+        <input type="date" class="form-control" name="AttendanceDate" required value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">InTime</label>
+        <input type="time" class="form-control" name="InTime" required value="@Model.InTime" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">OutTime</label>
+        <input type="time" class="form-control" name="OutTime" required value="@Model.OutTime" />
+    </div>
+
+    <div>
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/dailyattendance/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function checkFormValidity() {
+                const form = document.getElementById('dailyattendance');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#dailyattendance input, #dailyattendance select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

@@ -1,0 +1,60 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+/*  margin-bottom: 60px;*/
+}
+
+// for table border
+.table-bordered {
+    width:100%;
+    border: 1px solid #dee2e6; /* Border color */
+    border-collapse: collapse; /* Collapse borders */
+}
+
+.table-bordered th {
+    border: 1px solid #dee2e6; /* Border for th and td */
+    padding: 4px; /* Padding for better spacing */
+    text-align: center; /* Align text to the center */
+    position: sticky; /* Make header sticky */
+    top: 0; /* Stick to the top */
+    background-color: #f8f9fa; /* Background color for header */
+    z-index: 1; /* Ensures header stays on top of other rows */
+}
+.table-bordered td {
+    border: 1px solid #dee2e6; /* Border for th and td */
+    padding: 2px; /* Padding for better spacing */
+    text-align: center; /* Align text to the left */
+}
+.tbl-wrapper {
+    overflow-x:auto;
+/*    border: 2px solid #dee2e6;*/
+    height: 370px;
+}
+.div-btn {
+    margin-left: 83%;
+    padding-top: 10px;
+}
+.div-delete {
+    margin-left: 20px;
+}
+.btn-edit{
+    height:28px;
+    padding-top:1px;
+}

@@ -1,0 +1,78 @@
+﻿@{
+    TempData["Title"] = "ShiftEntry";
+}
+<h3>Shift Entry</h3>
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="shift" action="/shift/entry" method="post">
+    <div class="mb-3">
+        <label class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" placeholder="Type shift...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">InTime:</label>
+        <input type="time" class="form-control" id="InTime" name="InTime" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">OutTime:</label>
+        <input type="time" class="form-control" id="OutTime" name="OutTime" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">AttendancePolicy:</label>
+        <select class="form-select" name="AttendancePolicyId" required>
+            <option selected value="">Select AttendancePolicy</option>
+            @foreach (var attendancePolicy in ViewBag.AttendancePolicies)
+            {
+                <option value="@attendancePolicy.Id">@attendancePolicy.Name</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">LateAfter(Hours):</label>
+        <input type="number" class="form-control" name="LateAfter" required max="7" placeholder="Type late hours(zero if no)...." />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">EarlyOutBefore(Hours):</label>
+        <input type="number" class="form-control" name="EarlyOutBefore" required max="7" placeholder="Type early out hours(zero if no)...." />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/shift/list" class="btn btn-outline-primary">Goto List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //check form validity
+            $('#entry').prop('disabled', true);
+            function checkFormValidity() {
+                const form = document.getElementById('shift');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#shift input, #shift select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

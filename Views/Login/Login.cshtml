@@ -1,0 +1,63 @@
+﻿@{
+    TempData["Title"] = "LoginEntry";
+}
+<h3>Login Entry</h3>
+@{
+    var info = TempData["Info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<!--Login-->
+<form id="login" action="/login/login" method="post">
+    <div class="mb-3">
+        <label class="form-label">Code:</label>
+        <input type="text" class="form-control" name="Code" minlength="2" maxlength="10" placeholder="Type login code...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">UserName:</label>
+        <input type="text" class="form-control" name="UserName" minlength="4" maxlength="30" placeholder="Type username...." required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password:</label>
+        <input type="password" class="form-control" name="Password" minlength="8" maxlength="15" required />
+    </div>
+    
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" id="entry">Login</button>
+        <a href="/login/entry" class="btn btn-outline-primary">Register</a>
+        
+    </div>
+    <a href="/login/updatepassword" class="text-primary" style="text-decoration:none">forgot Password?</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+            function checkFormValidity(){
+                const form = document.getElementById('login');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#login input, #login select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

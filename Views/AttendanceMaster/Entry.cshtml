@@ -1,0 +1,144 @@
+﻿@{
+    TempData["Title"] = "AttendanceMasterEntry";
+}
+<h3>AttendanceMaster Entry</h3>
+@{
+    var info = TempData["Info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="attendancemaster" action="/attendancemaster/entry" method="post">
+
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            <option selected value="">Select EmployeeInfo</option>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                <option value="@employee.Id">@employee.Code</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">ShiftName:</label>
+        <select class="form-select" name="ShiftId" required>
+            <option selected value="">Select ShiftName</option>
+            @foreach (var shift in ViewBag.ShiftData)
+            {
+                <option value="@shift.Id">@shift.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">AttendanceDate:</label>
+        <input type="date" class="form-control" name="AttendanceDate" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IsLeave:</label>
+        <input type="checkbox" id="IsLeave" name="IsLeave" value="true" />
+        <input type="hidden" name="IsLeave" value="false" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">InTime:</label>
+        <input type="time" class="form-control" id="InTime" name="InTime" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">OutTime:</label>
+        <input type="time" class="form-control" id="OutTime" name="OutTime" />
+    </div>
+
+    <div class="mb-3">
+        <label for="IsLate" class="form-label">IsLate:</label>
+        <input type="checkbox" id="IsLate" name="IsLate" value="true" />
+        <input type="hidden" name="IsLate" value="false" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IsEarlyOut:</label>
+        <input type="checkbox" id="IsEarlyOut" name="IsEarlyOut" value="true" />
+        <input type="hidden" name="IsEarlyOut" value="false" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/attendancemaster/list" class="btn btn-outline-primary">Goto List</a>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+
+            //start field enable or not on state of checkbox
+            $('#IsLeave').change(function () {
+                if ($(this).is(':checked')) {
+                    // Disable if IsLeave is checked
+                    $('#InTime').prop('disabled', true);
+                    $('#OutTime').prop('disabled', true);
+                    $('#IsLate').prop('disabled', true);
+                    $('#IsEarlyOut').prop('disabled', true);
+                } else {
+                    // Enable if IsLeave is unchecked
+                    $('#InTime').prop('disabled', false);
+                    $('#OutTime').prop('disabled', false);
+                    $('#IsLate').prop('disabled', false);
+                    $('#IsEarlyOut').prop('disabled', false);
+                }
+            });
+
+            //required or not on state of checkbox
+            function toggleRequired() {
+                const chkIsLeave = document.getElementById('IsLeave');
+                const txtInTime = document.getElementById('InTime');
+                const txtOutTime = document.getElementById('OutTime');
+                if (!chkIsLeave.checked) {
+                    //set required in field
+                    txtInTime.setAttribute('required', 'required');
+                    txtOutTime.setAttribute('required', 'required');
+                    $('#entry').prop('disabled', true);
+                } else {
+                    //remove required in field
+                    txtInTime.removeAttribute('required');
+                    txtOutTime.removeAttribute('required');
+                    txtInTime.value = ""
+                    txtOutTime.value = ""
+                    $('#entry').prop('disabled', false);
+                }
+            }
+            toggleRequired();
+
+            document.getElementById('IsLeave').addEventListener('change', toggleRequired);
+            //end field enable or not on state of checkbox
+
+            //start check form validity
+            function checkFormValidity() {
+                const form = document.getElementById('attendancemaster');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#attendancemaster input, #attendancemaster select').on('input change', function () {
+                checkFormValidity();
+            });
+            //end check form validity
+        });
+    </script>
+</form>

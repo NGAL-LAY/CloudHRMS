@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@TempData["Title"] - CloudHRMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CloudHRMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" crossorigin="anonymous">
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CloudHRMS</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+
+                        <!-- Show only if user is logged in start -->
+                        @{
+                            var controller = ViewContext.RouteData.Values["controller"].ToString();
+                            var showNavTabs = TempData["IsLogIn"] as bool? == true ||
+                                              (controller == "Position"|| controller == "Department"|| controller == "Employee");
+                        }
+                        @if (showNavTabs)
+                        {
+                            <!-- Position menu-->
+                            <li class="nav-item dropdown text-dark ms-4">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Position
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Position" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Position" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Department Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Department
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Department" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Department" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Employee Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Employee
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- AttendacePolicy Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    AttendacePolicy
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="AttendancePolicy" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="AttendancePolicy" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Shift Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Shift
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Shift" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Shift" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- ShiftAssign Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ShiftAssign
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ShiftAssign" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ShiftAssign" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- DailyAttendance Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    DailyAttendance
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="DailyAttendance" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="DailyAttendance" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- AttendanceMaster Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    AttendanceMaster
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="AttendanceMaster" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="AttendanceMaster" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Payroll Menu-->
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Payroll
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Payroll" asp-action="Entry">Entry</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Payroll" asp-action="List">List</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- LogOut-->
+                            <li class="nav-item text-center text-primary">
+                                <a class="btn ms-3"
+                                   asp-area="" asp-controller="Login" asp-action="Logout">
+                                    <i class="fa-solid fa-right-from-bracket fa-2x" style="color:dodgerblue;font-size: 1.2em;"></i>
+                                </a>
+                            </li>
+                        }
+                        <!-- Show only if user is logged in start -->
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - CloudHRMS - All rights reserved
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

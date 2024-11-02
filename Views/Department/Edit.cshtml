@@ -1,0 +1,67 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model DepartmentViewModel
+@{
+    TempData["Title"] = "Department Edit";
+}
+<h3>Department Edit</h3>
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="department" action="/department/update" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">Code:</label>
+        <input type="text" class="form-control" name="Code" minlength="2" maxlength="10" required value="@Model.Code">
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" required value="@Model.Name">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Extension Phone:</label>
+        <input type="number" class="form-control" name="ExtensionPhone" minlength="8" maxlength="13" required value="@Model.ExtensionPhone">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/department/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function checkFormValidity() {
+                const form = document.getElementById('department');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#position input, #position select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

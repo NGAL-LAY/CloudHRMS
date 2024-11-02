@@ -1,0 +1,81 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model ShiftViewModel
+@{
+    TempData["Title"] = "Shift Edit";
+}
+<h3>Shift Edit</h3>
+@{
+    var info = TempData["info"];
+}
+<form id="shift" action="/shift/update" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" placeholder="Type shift...." required value="@Model.Name">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">InTime:</label>
+        <input type="time" class="form-control" id="InTime" name="InTime" required value="@Model.InTime" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">OutTime:</label>
+        <input type="time" class="form-control" id="OutTime" name="OutTime" required value="@Model.OutTime" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">AttendancePolicy:</label>
+        <select class="form-select" name="AttendancePolicyId" required>
+            @foreach (var attendancePolicy in ViewBag.AttendancePolicies)
+            {
+                @if (attendancePolicy.Id == Model.AttendancePolicyId)
+                {
+                    <option value="@attendancePolicy.Id" selected>@attendancePolicy.Name</option>
+                }
+                else
+                {
+                    <option value="@attendancePolicy.Id">@attendancePolicy.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">LateAfter(Hours):</label>
+        <input type="number" class="form-control" name="LateAfter" required max="6" placeholder="Type late hours(zero if no)...." value="@Model.LateAfter" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">EarlyOutBefore(Hours):</label>
+        <input type="number" class="form-control" name="EarlyOutBefore" required max="6" placeholder="Type early out hours(zero if no)...." value="@Model.EarlyOutBefore" />
+    </div>
+
+    <div>
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/shift/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function checkFormValidity() {
+                const form = document.getElementById('shift');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#shift input, #shift select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

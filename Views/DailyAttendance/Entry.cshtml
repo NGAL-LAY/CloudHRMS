@@ -1,0 +1,67 @@
+﻿@{
+    TempData["Title"] = "DailyAttendanceEntry";
+}
+<h3>DailyAttendance Entry</h3>
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="dailyattendance" action="/dailyattendance/entry" method="post">
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            <option selected value="">Select Employee</option>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                <option value="@employee.Id">@employee.Code</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">AttendanceDate:</label>
+        <input type="date" class="form-control" name="AttendanceDate" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">InTime(Hours):</label>
+        <input type="time" class="form-control" name="InTime" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">OutTime(Hours):</label>
+        <input type="time" class="form-control" name="OutTime" required />
+    </div>
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/dailyattendance/list" class="btn btn-outline-primary">Goto List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+            function checkFormValidity() {
+                const form = document.getElementById('dailyattendance');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#dailyattendance input, #dailyattendance select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

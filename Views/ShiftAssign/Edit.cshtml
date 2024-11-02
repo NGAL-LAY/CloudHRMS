@@ -1,0 +1,100 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model ShiftAssignViewModel
+@{
+    TempData["Title"] = "ShiftAssign Edit";
+}
+<h3>ShiftAssign Edit</h3>
+@{
+    var info = TempData["info"];
+}
+<form id="shiftassign" action="/shiftassign/update" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!--更新処理のためにIdを取得する-->
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                @if (employee.Id == Model.EmployeeId)
+                {
+                    <option value="@employee.Id" selected>@employee.Code</option>
+                }
+                else
+                {
+                    <option value="@employee.Id">@employee.Code</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ShiftName:</label>
+        <select class="form-select" name="ShiftId" required>
+            @foreach (var shift in ViewBag.Shifts)
+            {
+                @if (shift.Id == Model.ShiftId)
+                {
+                    <option selected value="@shift.Id">@shift.Name</option>
+                }
+                else
+                {
+                    <option value="@shift.Id">@shift.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">FromDate:</label>
+        <input type="datetime-local" id="FromDate" class="form-control" name="FromDate" required value="@Model.FromDate.ToString("yyyy-MM-ddTHH:mm")" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ToDate</label>
+        <input type="datetime-local" id="ToDate" class="form-control" name="ToDate" required value="@Model.ToDate.ToString("yyyy-MM-ddTHH:mm")" />
+    </div>
+
+    <div>
+        <label class="form-label">Created On:</label>
+        <input type="text" class="form-control" required value="@Model.CreatedOn" readonly name="CreatedOn">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Modified On:</label>
+        <input type="text" class="form-control" required value="@Model.UpdatedOn" readonly>
+    </div>
+    <button type="submit" class="btn btn-primary" id="update">Update</button>
+    <a href="/shiftassign/list" class="btn btn-outline-primary">GoTo List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //set min of todate based on fromdate value
+            document.getElementById('FromDate').addEventListener('change', function () {
+                const fromDate = this.value;
+                const toDateInput = document.getElementById('ToDate');
+                if (fromDate) {
+                    const minToDate = new Date(fromDate);
+                    minToDate.setDate(minToDate.getDate() + 1);
+                    // Format minToDate to match datetime-local input format (YYYY-MM-DDTHH:MM)
+                    const formattedMinToDate = minToDate.toISOString().slice(0, 16);
+                    toDateInput.min = formattedMinToDate;
+                } else {
+                    toDateInput.removeAttribute('min');
+                }
+            });
+            //check form validity
+            function checkFormValidity() {
+                const form = document.getElementById('shiftassign');
+                if (form.checkValidity()) {
+                    $('#update').prop('disabled', false);
+                } else {
+                    $('#update').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#shiftassign input, #shiftassign select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

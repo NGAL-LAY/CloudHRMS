@@ -1,0 +1,49 @@
+﻿@{
+    TempData["Title"] = "Home Page";
+}
+
+<div class="text-center my-2">
+    <h3 class="display-4">Welcome</h3>
+    <p>From Our Company, you are my family!</p>
+</div>
+
+<!-- Features Section -->
+<div class="container my-2">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="p-4 border rounded shadow-sm">
+                <h4>Building Architect</h4>
+                <img src="https://i2.wp.com/www.vagabondjourney.com/travelogue/wp-content/uploads/20120813060112Burj_Al_Arab_Dubai_by_Joi_Ito_Dec2007.jpg?w=3000&ssl=1" style="width:250px;height: 150px" alt="Image of Building Architect" class="img-fluid rounded mt-3" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded shadow-sm">
+                <h4>Software Development</h4>
+                <img src="https://assignmentpoint.com/wp-content/uploads/2014/08/team-development.jpg" style="width:250px;height: 150px" alt="Image of Building Architect" class="img-fluid rounded mt-3" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded shadow-sm">
+                <h4>Electronics Production</h4>
+                <img src="https://th.bing.com/th/id/OIP.r9T2lOYhB9heynpESrkfKAHaEK?rs=1&pid=ImgDetMain" style="width:250px;height: 150px" alt="Image of Building Architect" class="img-fluid rounded mt-3" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call-to-Action Section -->
+@if (TempData["IsLogIn"] != null && TempData["IsLogIn"] as bool? == false)
+{
+    <div class="text-center my-1">
+        <p class="lead">Join our community and start building powerful!</p>
+        <a class="btn btn-primary"
+           asp-area="" asp-controller="Login" asp-action="Entry">Get Started</a>
+    </div>
+}
+@if (TempData["IsLogIn"] != null && TempData["IsLogIn"] as bool? == true)
+{
+    <div class="text-center my-1">
+        <h4 class="display-5">Have a good day</h4>
+        <p>Every day you have a bright future!</p>
+    </div>
+}

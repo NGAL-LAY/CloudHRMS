@@ -1,0 +1,71 @@
+﻿@{
+    TempData["Title"] = "AttendancePolicyEntry";
+}
+<h3>AttendancePolicy Entry</h3>
+@{
+    var info = TempData["Info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="attendancepolicy" action="/attendancepolicy/entry" method="post">
+
+    <div class="mb-3">
+        <label class="form-label">Name:</label>
+        <input type="text" class="form-control" name="Name" minlength="4" maxlength="30" placeholder="Type AttendanePolicy...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">NumberOfLateTime:</label>
+        <input type="number" class="form-control" name="NumberOfLateTime" max="23" placeholder="Type late times(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">NumberOfEarlyOutTime:</label>
+        <input type="number" class="form-control" name="NumberOfEarlyOutTime" max="23" placeholder="Type early out times(zero if no)...." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DeductionInDay:</label>
+        <input type="number" class="form-control" name="DeductionInDay" max="23" required placeholder="Type deduction day(zero if no)...." />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">DeductionInAmount:</label>
+        <input type="number" class="form-control" name="DeductionInAmount" required placeholder="Type deduction amount(zero if no)...." />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/attendancepolicy/list" class="btn btn-outline-primary">Goto List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+            function checkFormValidity() {
+                const form = document.getElementById('attendancepolicy');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#attendancepolicy input, #attendancepolicy select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

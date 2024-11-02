@@ -1,0 +1,90 @@
+﻿@{
+    TempData["Title"] = "ShiftAssignEntry";
+}
+<h3>ShiftAssign Entry</h3>
+@{
+    var info = TempData["info"];
+}
+@if (info != null)
+{
+    if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">@info</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@info</div>
+    }
+}
+<form id="shiftassign" action="/shiftassign/entry" method="post">
+    <div class="mb-3">
+        <label class="form-label">EmployeeInfo:</label>
+        <select class="form-select" name="EmployeeId" required>
+            <option selected value="">Select Employee</option>
+            @foreach (var employee in ViewBag.EmployeeData)
+            {
+                <option value="@employee.Id">@employee.Code</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ShiftName:</label>
+        <select class="form-select" name="ShiftId" required>
+            <option selected value="">Select Shift</option>
+            @foreach (var shift in ViewBag.Shifts)
+            {
+                <option value="@shift.Id">@shift.Name</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">FromDate:</label>
+        <input type="datetime-local" id="FromDate" class="form-control" name="FromDate" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ToDate:</label>
+        <input type="datetime-local" id="ToDate" class="form-control" name="ToDate" required />
+    </div>
+    <button type="submit" class="btn btn-primary" id="entry">Entry</button>
+    <a href="/shiftassign/list" class="btn btn-outline-primary">List</a>
+
+    <!--javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#entry').prop('disabled', true);
+
+            //set min of todate based on fromdate value
+            document.getElementById('FromDate').addEventListener('change', function () {
+                const fromDate = this.value;
+                const toDateInput = document.getElementById('ToDate');
+                if (fromDate) {
+                    const minToDate = new Date(fromDate);
+                    minToDate.setDate(minToDate.getDate() + 1);
+                    // Format minToDate to match datetime-local input format (YYYY-MM-DDTHH:MM)
+                    const formattedMinToDate = minToDate.toISOString().slice(0, 16);
+                    toDateInput.min = formattedMinToDate;
+                } else {
+                    toDateInput.removeAttribute('min');
+                }
+            });
+
+            // check form validity
+            function checkFormValidity() {
+                const form = document.getElementById('shiftassign');
+                if (form.checkValidity()) {
+                    $('#entry').prop('disabled', false);
+                } else {
+                    $('#entry').prop('disabled', true);
+                }
+            }
+
+            checkFormValidity();
+
+            // Add event listeners to form inputs to trigger validation check on change
+            $('#shiftassign input, #shiftassign select').on('input change', function () {
+                checkFormValidity();
+            });
+        });
+    </script>
+</form>

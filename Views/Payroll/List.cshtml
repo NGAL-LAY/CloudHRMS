@@ -1,0 +1,226 @@
+﻿@using CloudHRMS.Models.ViewModels
+@model IEnumerable<PayrollViewModel>
+@{
+    TempData["Title"] = "PayrollList";
+}
+
+<!-- Search form start-->
+<div class="d-flex align-items-center mb-3">
+    <h3>Payroll</h3>
+    <a class="btn btn-outline-primary ms-5" onclick="exportToExcel(event)">Export</a>
+    <form method="get" action="/payroll/list" class="d-flex w-50" style="margin-left:23%">
+        <input type="text" name="searchTerm" class="form-control me-2 ms-3" style="width: 220px;"
+               value="@TempData["SearchTerm"]"
+               placeholder="Search by Emp Info" />
+        <input type="date" id="FromDate" class="form-control me-2" name="FromDate" value="@TempData["FromDate"]" />
+        <input type="date" id="ToDate" class="form-control me-2" name="ToDate"
+               onclick="setToDateMin(event)"
+               value="@TempData["ToDate"]" />
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+</div>
+<!-- Search form end-->
+<!--edit start-->
+@if (TempData["Info"] != null)
+{
+    @if (Convert.ToBoolean(TempData["Status"]))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["info"]
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["info"]
+        </div>
+    }
+
+}
+<!--edit end-->
+<form action="/payroll/delete" method="post" onsubmit="return confirm('Are you sure to delete the selected record(s)?')">
+    <div class="tbl-wrapper">
+        <table class="table-bordered">
+            <colgroup>
+                <col style="width: 30px;">
+                <col style="width: 75px;">
+                <col style="width: 160px;">
+                <col style="width: 90px;">
+                <col style="width: 90px;">
+                <col style="width: 75px;">
+                <col style="width: 75px;">
+                <col style="width: 75px;">
+                <col style="width: 75px;">
+                <col style="width: 75px;">
+                <col style="width: 50px;">
+                <col style="width: 75px;">
+                <col style="width: 65px;">
+            </colgroup>
+            <thead>
+                @{
+                    int i = 1;
+                }
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" id="IsAllCheck" onclick="toggleAllCheckboxes(this)" />
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">EmployeeInfo</th>
+                    <th scope="col">FromDate</th>
+                    <th scope="col">ToDate</th>
+                    <th scope="col">IncomeTax</th>
+                    <th scope="col">GrossPay</th>
+                    <th scope="col">NetPay</th>
+                    <th scope="col">Allowlance</th>
+                    <th scope="col">Deduction</th>
+                    <th scope="col">Attendance Days</th>
+                    <th scope="col">Attendance Deduction</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model?.Count() > 0)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedIds" value="@item.Id" />
+                            </td>
+                            <td scope="row">@i</td>
+                            <td>@item.EmployeeInfo</td>
+                            <td>@item.FromDate.ToString("yyyy-MM-dd")</td>
+                            <td>@item.ToDate.ToString("yyyy-MM-dd")</td>
+                            <td>@item.IncomeTax</td>
+                            <td>@item.GrossPay</td>
+                            <td>@item.NetPay</td>
+                            <td>@item.Allowlance</td>
+                            <td>@item.Deduction</td>
+                            <td>@item.AttendanceDays</td>
+                            <td>@item.AttendanceDeduction</td>
+                            <td>
+                                <!-- call edit -->
+                                <a href="/payroll/edit?id=@item.Id" class="btn btn-success btn-edit">EDIT</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="13">
+                            <div class="alert alert-danger">There is no data !</div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="div-btn">
+        <!-- Button to go Entry -->
+        <a href="/payroll/entry" class="btn btn-outline-primary">ENTRY</a>
+        <!-- Button to delete selected items -->
+        <button type="submit" class="btn btn-danger div-delete" onclick="validateCheckboxSelection(event)">DELETE</button>
+    </div>
+</form>
+<script>
+
+    //set up min date todate based on fromdate
+    function setToDateMin(event) {
+        const fromDate = document.getElementById('FromDate').value;
+        const toDate = document.getElementById('ToDate');
+        if (fromDate) {
+            const minToDate = new Date(fromDate);
+            minToDate.setDate(minToDate.getDate());
+            //setting up todate format
+            const formattedMinDate = minToDate.toISOString().split('T')[0];
+            toDate.min = formattedMinDate;
+        } else {
+            toDate.removeAttribute('min');
+        }
+    }
+    //allchecked or unallchecked
+    function toggleAllCheckboxes(source) {
+        checkboxes = document.getElementsByName('selectedIds');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+
+    //get value from check boxes
+    function validateCheckboxSelection(event) {
+        const checkboxes = document.getElementsByName('selectedIds');
+        let IsChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        if (!IsChecked) {
+            alert("Please select at least one row to delete");
+            event.preventDefault();
+        }
+    }
+
+    //export data to excel
+    function exportToExcel(event) {
+        event.preventDefault();
+
+        // Gather data from the table
+        var data = [];
+        var table = document.querySelector('.table-bordered tbody');
+
+        table.querySelectorAll('tr').forEach(function (row) {
+            // Ensure cells are correctly indexed based on your table structure
+            var rowData = {
+                EmployeeInfo: row.cells[2] ? row.cells[2].innerText.trim() : "",
+                FromDate: row.cells[3] ? row.cells[3].innerText.trim() : "",
+                ToDate: row.cells[4] ? row.cells[4].innerText.trim() : "",
+                IncomeTax: row.cells[5] ? row.cells[5].innerText.trim() : "",
+                GrossPay: row.cells[6] ? row.cells[6].innerText.trim() : "",
+                NetPay: row.cells[7] ? row.cells[7].innerText.trim() : "",
+                Allowlance: row.cells[8] ? row.cells[8].innerText.trim() : "",
+                Deduction: row.cells[9] ? row.cells[9].innerText.trim() : "",
+                AttendanceDays: row.cells[10] ? row.cells[10].innerText.trim() : "",
+                AttendanceDeduction: row.cells[11] ? row.cells[11].innerText.trim() : ""
+            };
+            data.push(rowData);
+        });
+
+        $.ajax({
+            url: '/Payroll/ExportToExcel',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            xhrFields: {
+                responseType: 'blob' // Set response type to blob
+            },
+            success: function (response) {
+                // Create a link element to download the file
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+
+                // Dynamic filename with timestamp
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+                var day = now.getDate().toString().padStart(2, '0');
+                var hours = now.getHours().toString().padStart(2, '0');
+                var minutes = now.getMinutes().toString().padStart(2, '0');
+                var seconds = now.getSeconds().toString().padStart(2, '0');
+
+                var timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
+                a.download = `PayrollData_${timestamp}.xlsx`;
+
+                document.body.appendChild(a); // Append the link to the body
+                a.click(); // Trigger the download
+
+                document.body.removeChild(a); // Clean up the DOM
+                window.URL.revokeObjectURL(url); // Release memory
+            },
+            error: function (xhr, status, error) {
+                console.error('Export failed:', error);
+                alert('An error occurred while exporting. Please try again.');
+            }
+        });
+    }
+</script>
